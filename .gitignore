@@ -1,0 +1,22 @@
+# AegisScan: Git Ignore Configuration
+
+# Sensitive Folders (Audits & Results)
+reports/
+*.log
+aegisscan.log
+
+# Compiled Go Binaries
+modules/fast_scan
+modules/fast_scan.exe
+
+# Python Cache & Environment
+__pycache__/
+*.pyc
+.env
+.venv
+env/
+venv/
+
+# IDE Configuration
+.vscode/
+.idea/
