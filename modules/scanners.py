@@ -9,6 +9,8 @@ class NmapModule(BaseScanner):
         self.logger.info(f"Running Nmap elite service scan for {self.target}...")
         host = self.sanitize_input(self.target)
         # Basic service scan: -sV (Service Version), -T4 (Aggressive timing)
+        # WARNING: Aggressive timing (-T4) can cause network congestion and alert IDS/IPS.
+        # Use mainly for internal CTFs or authorized ranges.
         cmd = ["nmap", "-sV", "-T4", host]
         return self.execute_hardened(cmd, tool_name="nmap")
 
@@ -42,14 +44,17 @@ class ReconModule(BaseScanner):
             if "wordpress" in self.target.lower():
                 results["cms"] = "WordPress"
             
-            # Use Go-based fast scanner if available
+            # Use Go-based fast scanner if available (Reference Implementation content)
             host = self.sanitize_input(self.target)
-            go_bin = "modules/fast_scan"
+            # UPDATED: Moved to examples/ for Open-Core compliance
+            go_bin = "examples/fast_port_scanner_demo"
             if os.name == 'nt': go_bin += ".exe"
             
             if os.path.exists(go_bin):
-                self.logger.info("Using Go-based elite performance scanner...")
+                self.logger.info("Using Go-based reference scanner (Demo)...")
                 results["go_scan_output"] = self.execute_hardened([os.path.abspath(go_bin), host])
+            else:
+                 self.logger.debug("Go-based reference scanner not compiled/found in examples/")
             
             # Use active nmap scan
             results["nmap_output"] = self.nmap.scan_services()
