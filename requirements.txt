@@ -1,0 +1,12 @@
+# Core dependencies for AegisScan Strategic v4.0
+requests>=2.25.1
+httpx>=0.23.0
+PyYAML>=5.4.1
+jinja2>=3.0.0
+colorama>=0.4.4
+tabulate>=0.8.9
+flask>=2.0.0
+
+# Optional dependencies for enhanced functionality
+# scapy>=2.4.5  # For advanced network scanning (requires admin/root)
+# nmap>=0.7.1   # For Nmap integration (requires Nmap installed)

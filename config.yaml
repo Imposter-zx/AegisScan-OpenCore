@@ -1,0 +1,96 @@
+# AegisScan Strategic v4.0 Configuration File
+# Copy this file to config.local.yaml for local overrides
+
+# General Settings
+general:
+  log_level: INFO
+  log_file: aegisscan.log
+  max_concurrent_scans: 3
+  default_timeout: 30
+
+# Network Settings
+network:
+  default_interface: auto
+  packet_capture_feasible: true
+  max_packet_size: 65535
+  enable_ipv6: false
+
+# Stealth/Evasion Settings
+stealth:
+  enabled: false
+  jitter_min: 1.0
+  jitter_max: 3.0
+  user_agent_rotation: true
+  proxy_chain: []
+
+# Mission Settings
+missions:
+  recon:
+    noise_threshold: 50
+    intel_goal: 100
+    depth_limit: 2
+  validation:
+    noise_threshold: 30
+    intel_goal: 75
+    depth_limit: 1
+  emulation:
+    noise_threshold: 75
+    intel_goal: 150
+    depth_limit: 3
+
+# Operational Modes
+modes:
+  audit:
+    stealth: false
+    aggression: medium
+    safety_checks: true
+  stealth:
+    stealth: true
+    aggression: low
+    safety_checks: true
+  observation:
+    stealth: true
+    aggression: low
+    safety_checks: true
+    interval_minutes: 60
+
+# Reporting Settings
+reporting:
+  default_format: json
+  output_directory: reports
+  include_raw_data: false
+  mitre_mapping: true
+  compress_output: false
+
+# Integrations
+integrations:
+  # SIEM/SOAR Integrations
+  splunk:
+    enabled: false
+    hec_url: ""
+    hec_token: ""
+    index: "security"
+  
+  elasticsearch:
+    enabled: false
+    hosts: ["localhost:9200"]
+    index_prefix: "aegisscan"
+    username: ""
+    password: ""
+  
+  # Webhook Notifications
+  webhook:
+    enabled: false
+    url: ""
+    headers: {}
+    template: "default"
+
+  # Email Notifications
+  email:
+    enabled: false
+    smtp_server: "localhost"
+    smtp_port: 587
+    username: ""
+    password: ""
+    from_address: "aegisscan@example.com"
+    to_addresses: []
