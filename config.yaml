@@ -62,35 +62,47 @@ reporting:
   mitre_mapping: true
   compress_output: false
 
-# Integrations
-integrations:
-  # SIEM/SOAR Integrations
-  splunk:
-    enabled: false
-    hec_url: ""
-    hec_token: ""
-    index: "security"
-  
-  elasticsearch:
-    enabled: false
-    hosts: ["localhost:9200"]
-    index_prefix: "aegisscan"
-    username: ""
-    password: ""
-  
-  # Webhook Notifications
-  webhook:
-    enabled: false
-    url: ""
-    headers: {}
-    template: "default"
-
-  # Email Notifications
-  email:
-    enabled: false
-    smtp_server: "localhost"
-    smtp_port: 587
-    username: ""
-    password: ""
-    from_address: "aegisscan@example.com"
-    to_addresses: []
+  # Integrations
+  integrations:
+    # SIEM/SOAR Integrations
+    splunk:
+      enabled: false
+      hec_url: ""
+      hec_token: ""
+      index: "security"
+      verify_ssl: true
+   
+    elasticsearch:
+      enabled: false
+      hosts: ["localhost:9200"]
+      index_prefix: "aegisscan"
+      username: ""
+      password: ""
+      verify_ssl: true
+   
+    # Webhook Notifications
+    webhook:
+      enabled: false
+      url: ""
+      http_method: "POST"
+      headers: {}
+      auth_type: "none"  # none, basic, bearer
+      username: ""
+      password: ""
+      token: ""
+      template: "aegisscan"
+      timeout_seconds: 30
+      verify_ssl: true
+      retry_attempts: 3
+      retry_delay_seconds: 5
+   
+    # Email Notifications
+    email:
+      enabled: false
+      smtp_server: "localhost"
+      smtp_port: 587
+      username: ""
+      password: ""
+      from_address: "aegisscan@example.com"
+      to_addresses: []
+      use_tls: true

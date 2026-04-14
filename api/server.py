@@ -1,6 +1,7 @@
 """
 REST API Wrapper for AegisScan Strategic v4.0
 Provides programmatic access to the AegisScan engine for integration with other tools.
+Includes JWT-based authentication for secure access.
 """
 
 import threading
@@ -18,13 +19,105 @@ from main import main as run_aegisscan
 from core.engine import ScanningEngine
 from core.config import Config
 from core.mission import MissionTypes
+from api.auth import (
+    require_auth,
+    optional_auth,
+    MOCK_USERS,
+    verify_token,
+    create_access_token,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
+app.config["SECRET_KEY"] = os.environ.get(
+    "AEGISCAN_API_SECRET", "dev-secret-key-change-in-production"
+)
 
 # Store active scans
 active_scans: Dict[str, Any] = {}
 scan_results: Dict[str, Any] = {}
+
+
+# Authentication endpoints
+@app.route("/auth/login", methods=["POST"])
+def login():
+    """Authenticate user and return JWT token"""
+    data = request.get_json()
+
+    if not data or not data.get("username") or not data.get("password"):
+        return jsonify({"error": "Username and password required"}), 400
+
+    username = data["username"]
+    password = data["password"]
+
+    # Validate credentials
+    if username in MOCK_USERS:
+        user = MOCK_USERS[username]
+        if verify_password(password, user["hashed_password"]):
+            # Create access token
+            access_token = create_access_token(
+                data={"sub": username, "role": user["role"]}
+            )
+            return jsonify(
+                {
+                    "access_token": access_token,
+                    "token_type": "bearer",
+                    "expires_in": ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+                    "user": {"username": user["username"], "role": user["role"]},
+                }
+            )
+
+    return jsonify({"error": "Invalid credentials"}), 401
+
+
+@app.route("/auth/token", methods=["POST"])
+def refresh_token():
+    """Refresh an existing token"""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return jsonify({"error": "Authorization header required"}), 401
+
+    try:
+        token_type, token = auth_header.split(" ")
+        if token_type.lower() != "bearer":
+            return jsonify({"error": "Invalid authorization type"}), 401
+    except ValueError:
+        return jsonify({"error": "Invalid authorization header"}), 401
+
+    payload = verify_token(token)
+    if not payload:
+        return jsonify({"error": "Invalid or expired token"}), 401
+
+    # Create new token
+    new_token = create_access_token(
+        data={"sub": payload["sub"], "role": payload.get("role", "user")}
+    )
+
+    return jsonify(
+        {
+            "access_token": new_token,
+            "token_type": "bearer",
+            "expires_in": ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        }
+    )
+
+
+@app.route("/auth/me", methods=["GET"])
+@require_auth
+def get_current_user_info():
+    """Get current user information"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify(
+        {
+            "username": user["username"],
+            "role": user["role"],
+            "permissions": user.get("permissions", []),
+        }
+    )
 
 
 def run_scan_async(
@@ -74,6 +167,7 @@ def health_check():
 
 
 @app.route("/scan", methods=["POST"])
+@require_auth("scan:write")
 def start_scan():
     """Start a new scan"""
     data = request.get_json()
