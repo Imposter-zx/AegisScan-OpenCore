@@ -64,6 +64,7 @@ This repository follows a **Responsible Open-Core** research model (see [STRATEG
 - Python 3.9+
 - Nmap / Tshark (optional, for specific passive reconnaissance modules)
 - Go (optional, for compiling example scanners)
+- For API usage: install additional dependencies (`pip install -e .[api]`)
 
 ### Installation
 
@@ -88,6 +89,48 @@ Runs periodic, low-volume activity to test continuous monitoring alertness.
 ```bash
 python main.py target.com --interval 60 --mode observation
 ```
+
+**API Server Mode**
+Start the RESTful API server for programmatic access and integration.
+
+```bash
+python api/server.py
+```
+The API will be available at http://localhost:5000
+
+### Advanced Features
+
+#### Advanced Vulnerability Scanning
+AegisScan now includes an advanced vulnerability scanner with support for:
+- Nuclei template-based scanning
+- Nikto web server scanning
+- Custom vulnerability checks
+- Comprehensive reporting with severity levels
+
+#### Multiple Reporting Formats
+Reports can be generated in various formats:
+- JSON (default)
+- Text (human-readable)
+- STIX 2.1 (for threat intelligence sharing)
+- CEF (Common Event Format for SIEM integration)
+
+Specify format with `--output` flag:
+```bash
+python main.py target.com --mode audit --mission recon --output stix
+```
+
+#### Webhook Integrations
+Configure webhook notifications in `config.yaml` to automatically send results to:
+- SIEM platforms (Splunk, Elasticsearch)
+- SOAR platforms
+- Custom webhook endpoints
+- Email notifications
+
+#### Secure REST API
+The API includes JWT-based authentication:
+- Obtain token: `POST /auth/login` with username/password
+- Access protected endpoints: Include `Authorization: Bearer <token>` header
+- Role-based access control (admin/operator/viewer)
 
 ---
 

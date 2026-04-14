@@ -39,6 +39,10 @@ setup(
             "scapy>=2.4.5",
             "python-nmap>=0.7.1",
         ],
+        "api": [
+            "PyJWT>=2.6.0",
+            "bcrypt>=4.0.0",
+        ],
         "dev": [
             "pytest>=6.2.4",
             "black>=21.9b0",
