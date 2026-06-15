@@ -8,6 +8,8 @@ import threading
 import time
 from typing import Dict, Any, Optional
 from flask import Flask, request, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import logging
 import sys
 import os
@@ -34,6 +36,13 @@ app.config["SECRET_KEY"] = os.environ.get(
     "AEGISCAN_API_SECRET", "dev-secret-key-change-in-production"
 )
 
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["60 per minute", "5 per second"],
+    storage_uri="memory://",
+)
+
 # Store active scans
 active_scans: Dict[str, Any] = {}
 scan_results: Dict[str, Any] = {}
@@ -41,6 +50,7 @@ scan_results: Dict[str, Any] = {}
 
 # Authentication endpoints
 @app.route("/auth/login", methods=["POST"])
+@limiter.limit("10 per minute")
 def login():
     """Authenticate user and return JWT token"""
     data = request.get_json()
@@ -167,6 +177,7 @@ def health_check():
 
 
 @app.route("/scan", methods=["POST"])
+@limiter.limit("30 per minute")
 @require_auth("scan:write")
 def start_scan():
     """Start a new scan"""

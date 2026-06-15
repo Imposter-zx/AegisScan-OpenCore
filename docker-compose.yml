@@ -1,0 +1,13 @@
+services:
+  aegisscan:
+    build: .
+    container_name: aegisscan
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/opt/aegisscan/reports
+      - ./config.yaml:/opt/aegisscan/config.yaml
+    command: python api/server.py
+    restart: unless-stopped

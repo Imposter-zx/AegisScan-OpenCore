@@ -33,6 +33,8 @@ setup(
         "colorama>=0.4.4",
         "tabulate>=0.8.9",
         "flask>=2.0.0",
+        "flask-limiter>=3.3.1",
+        "python-dotenv>=1.0.0",
     ],
     extras_require={
         "advanced": [
