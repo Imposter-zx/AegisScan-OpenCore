@@ -12,7 +12,9 @@ class TestScanningEngine(unittest.TestCase):
     @patch("core.engine.ReconModule")
     @patch("core.engine.Fingerprinter")
     @patch("core.engine.detect_cdn")
-    def test_recon_phase_execution(self, mock_detect_cdn, mock_fingerprinter, mock_recon):
+    def test_recon_phase_execution(
+        self, mock_detect_cdn, mock_fingerprinter, mock_recon
+    ):
         """Test that recon phase executes without error"""
         from core.engine import ScanningEngine
 
@@ -79,9 +81,18 @@ class TestReporter(unittest.TestCase):
             reporter.generate(
                 target="test.example.com",
                 findings=[
-                    {"severity": "HIGH", "title": "Test finding", "type": "vulnerability_summary", "count": 1}
+                    {
+                        "severity": "HIGH",
+                        "title": "Test finding",
+                        "type": "vulnerability_summary",
+                        "count": 1,
+                    }
                 ],
-                stack={"mode": "audit", "phases": ["RECON"], "mission": {"objective": "RECON"}},
+                stack={
+                    "mode": "audit",
+                    "phases": ["RECON"],
+                    "mission": {"objective": "RECON"},
+                },
             )
             self.assertIsNotNone(reporter)
 

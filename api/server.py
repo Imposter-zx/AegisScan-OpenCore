@@ -216,15 +216,18 @@ def start_scan():
     thread.daemon = True
     thread.start()
 
-    return jsonify(
-        {
-            "scan_id": scan_id,
-            "status": "started",
-            "target": target,
-            "mode": mode,
-            "mission": mission,
-        }
-    ), 202
+    return (
+        jsonify(
+            {
+                "scan_id": scan_id,
+                "status": "started",
+                "target": target,
+                "mode": mode,
+                "mission": mission,
+            }
+        ),
+        202,
+    )
 
 
 @app.route("/scan/<scan_id>", methods=["GET"])

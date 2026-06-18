@@ -104,9 +104,12 @@ def require_auth(permission: str = None):
             try:
                 token_type, token = auth_header.split(" ")
                 if token_type.lower() != "bearer":
-                    return jsonify(
-                        {"error": "Invalid authorization type. Use Bearer token"}
-                    ), 401
+                    return (
+                        jsonify(
+                            {"error": "Invalid authorization type. Use Bearer token"}
+                        ),
+                        401,
+                    )
             except ValueError:
                 return jsonify({"error": "Invalid authorization header format"}), 401
 

@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
@@ -36,7 +37,9 @@ class Config:
         env_file = env_path or os.path.join(os.getcwd(), ".env")
         if os.path.exists(env_file):
             load_dotenv(env_file)
-            logging.getLogger("AegisScan.Config").info(f"Loaded environment from {env_file}")
+            logging.getLogger("AegisScan.Config").info(
+                f"Loaded environment from {env_file}"
+            )
         cls._env_loaded = True
 
     @classmethod
@@ -44,13 +47,16 @@ class Config:
         """Load configuration from YAML file."""
         try:
             import yaml
+
             path = yaml_path or os.path.join(os.getcwd(), "config.yaml")
             if os.path.exists(path):
                 with open(path, "r") as f:
                     cls._yaml_config = yaml.safe_load(f) or {}
                 logging.getLogger("AegisScan.Config").info(f"Loaded config from {path}")
         except ImportError:
-            logging.getLogger("AegisScan.Config").warning("PyYAML not installed, skipping YAML config")
+            logging.getLogger("AegisScan.Config").warning(
+                "PyYAML not installed, skipping YAML config"
+            )
         return cls._yaml_config
 
     @classmethod
@@ -90,7 +96,9 @@ class Config:
         """Validates that the selected operational mode is within authorized limits."""
         authorized = [Config.MODE_OBSERVATION, Config.MODE_STEALTH, Config.MODE_AUDIT]
         if mode not in authorized:
-            raise ValueError(f"CRITICAL: Unauthorized Operational Mode '{mode}' requested.")
+            raise ValueError(
+                f"CRITICAL: Unauthorized Operational Mode '{mode}' requested."
+            )
         return True
 
     @staticmethod
