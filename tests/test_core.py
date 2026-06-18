@@ -116,14 +116,29 @@ class TestEngagementMemory(unittest.TestCase):
 
     def test_log_behavior(self):
         self.memory.log_behavior(latency=1.2, status_code=200)
-        self.assertGreater(len(self.memory.behavior_history), 0)
+        self.assertGreater(len(self.memory.target_behavior_history), 0)
 
     def test_is_blocked_initially(self):
         self.assertFalse(self.memory.is_blocked("vulnerability_scan"))
 
-    def test_calculate_pressure(self):
-        pressure = self.memory.calculate_pressure()
+    def test_record_block(self):
+        self.memory.record_block("vuln_scan")
+        self.assertTrue(self.memory.is_blocked("vuln_scan"))
+
+    def test_get_session_pressure_empty(self):
+        pressure = self.memory.get_session_pressure()
+        self.assertEqual(pressure, 0)
+
+    def test_get_session_pressure_with_errors(self):
+        self.memory.log_behavior(latency=1.0, status_code=403)
+        self.memory.log_behavior(latency=0.5, status_code=200)
+        pressure = self.memory.get_session_pressure()
+        self.assertGreater(pressure, 0)
         self.assertIsInstance(pressure, (int, float))
+
+    def test_record_success(self):
+        self.memory.record_success("evasion_01")
+        self.assertIn("evasion_01", self.memory.successful_evasions)
 
 
 if __name__ == "__main__":
